@@ -15,6 +15,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     compile("net.dv8tion:JDA:4.2.0_168")
     compile("ch.qos.logback:logback-classic:1.2.3")
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 test {
