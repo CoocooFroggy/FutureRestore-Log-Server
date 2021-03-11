@@ -106,6 +106,9 @@ public class Main {
 
             File fileToSend = new File(logPath);
 
+            if (discord.equals("")) {
+                discord = "None";
+            }
             jda.getTextChannelById("818879231772983357").sendMessage("User: " + discord)
                     .addFile(fileToSend).complete();
 
