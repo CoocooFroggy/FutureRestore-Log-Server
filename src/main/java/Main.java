@@ -10,6 +10,8 @@ import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     public static JDA jda;
@@ -89,16 +91,25 @@ public class Main {
             return gson.fromJson(bodyBuilder.toString(), Map.class);
         }
 
+        Pattern pattern = Pattern.compile("what=(.*)");
         void sendLog(Map<String, Object> rootJson) throws IOException {
             String discord = (String) rootJson.get("discord");
             String logName = (String) rootJson.get("logName");
             String fullLog = (String) rootJson.get("log");
+            String status = "None";
 
             File logDirectory = new File("logs/");
             if (!logDirectory.exists())
                 logDirectory.mkdir();
 
-            String logPath = "logs/" + logName + ".txt";
+            if (!logName.endsWith(".txt"))
+                logName += ".txt";
+            String logPath = "logs/" + logName;
+
+            // Parse error/success message
+            Matcher matcher = pattern.matcher(fullLog);
+            if (matcher.find())
+                status = matcher.group(1);
 
             FileWriter writer = new FileWriter(logPath);
             writer.write(fullLog);
@@ -109,7 +120,7 @@ public class Main {
             if (discord.equals("")) {
                 discord = "None";
             }
-            jda.getTextChannelById("818879231772983357").sendMessage("User: " + discord)
+            jda.getTextChannelById("818879231772983357").sendMessage("Message: " + status + ", User: " + discord)
                     .addFile(fileToSend).complete();
 
             //Delete the file
