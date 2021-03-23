@@ -47,19 +47,23 @@ public class Main {
 
     static class LogHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange exchange) throws IOException {
+        public void handle(HttpExchange exchange) {
             Headers headers = exchange.getRequestHeaders();
 
             //Authorize. If fails, return
-            if (!authorize(exchange, headers))
-                return;
+            try {
+                if (!authorize(exchange, headers))
+                    return;
 
-            //Read data from request
-            Map<String, Object> rootJson = parseData(exchange);
-            //Send log
-            sendLog(rootJson);
+                //Read data from request
+                Map<String, Object> rootJson = parseData(exchange);
+                //Send log
+                sendLog(rootJson);
 
-            respond(exchange, 200, "ty for log <3");
+                respond(exchange, 200, "ty for log <3");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         boolean authorize(HttpExchange exchange, Headers headers) throws IOException {
@@ -92,6 +96,7 @@ public class Main {
         }
 
         Pattern pattern = Pattern.compile("what=(.*)");
+
         void sendLog(Map<String, Object> rootJson) throws IOException {
             String discord = (String) rootJson.get("discord");
             String logName = (String) rootJson.get("logName");
