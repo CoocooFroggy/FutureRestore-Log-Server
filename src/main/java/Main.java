@@ -70,14 +70,11 @@ public class Main {
             // Make sure it's coming from FR ;)
             String correctAuthString = "CoocooFroggy rocks";
             String providedAuthString = headers.get("authorization").get(0);
-            //If no auth header provided
-            System.out.println("Provided auth: " + providedAuthString);
             if (!providedAuthString.equals(correctAuthString)) {
                 respond(exchange, 403, "Wrong auth header :/");
                 return false;
             }
             //Otherwise it's correct
-            System.out.println("Correct auth header!");
             return true;
         }
 
@@ -95,7 +92,7 @@ public class Main {
             return gson.fromJson(bodyBuilder.toString(), Map.class);
         }
 
-        Pattern pattern = Pattern.compile("what=(.*)");
+        Pattern pattern = Pattern.compile("what=(.*)|Done: restoring succeeded!");
 
         void sendLog(Map<String, Object> rootJson) throws IOException {
             String discord = (String) rootJson.get("discord");
@@ -113,8 +110,15 @@ public class Main {
 
             // Parse error/success message
             Matcher matcher = pattern.matcher(fullLog);
-            if (matcher.find())
-                status = matcher.group(1);
+            if (matcher.find()) {
+                //If what=message is not null
+                if (matcher.group(1) != null) {
+                    status = matcher.group(1);
+                } else {
+                    //Otherwise status is just the match then
+                    status = matcher.group(0);
+                }
+            }
 
             FileWriter writer = new FileWriter(logPath);
             writer.write(fullLog);
