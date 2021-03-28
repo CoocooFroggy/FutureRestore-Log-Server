@@ -132,12 +132,19 @@ public class Main {
             if (discord.equals("")) {
                 discord = "None";
             }
+            if (command == null) {
+                command = "None (or GUI version too old)";
+            }
+            if (guiVersion == null) {
+                guiVersion = "None (or GUI version too old)";
+            }
 
             //Build a nice looking embed to appear Cryptic's old eyes
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setAuthor("User: " + discord);
             embedBuilder.setDescription(
                     "Message: `" + status + "`\n" +
+                    "Command:\n" +
                     "```\n" +
                     command + "\n" +
                     "```\n");
