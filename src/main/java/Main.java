@@ -3,6 +3,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
@@ -98,6 +99,8 @@ public class Main {
             String discord = (String) rootJson.get("discord");
             String logName = (String) rootJson.get("logName");
             String fullLog = (String) rootJson.get("log");
+            String command = (String) rootJson.get("command");
+            String guiVersion = (String) rootJson.get("guiVersion");
             String status = "None";
 
             File logDirectory = new File("logs/");
@@ -129,7 +132,18 @@ public class Main {
             if (discord.equals("")) {
                 discord = "None";
             }
-            jda.getTextChannelById("818879231772983357").sendMessage("Message: " + status + ", User: " + discord)
+
+            //Build a nice looking embed to appear Cryptic's old eyes
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setAuthor("User: " + discord);
+            embedBuilder.setDescription(
+                    "Message: `" + status + "`\n" +
+                    "```\n" +
+                    command + "\n" +
+                    "```\n");
+            embedBuilder.setFooter("FR-GUI version: " + guiVersion);
+
+            jda.getTextChannelById("818879231772983357").sendMessage(embedBuilder.build())
                     .addFile(fileToSend).complete();
 
             //Delete the file
