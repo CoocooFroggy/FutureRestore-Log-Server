@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
 import javax.security.auth.login.LoginException;
+import java.awt.*;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -102,6 +103,7 @@ public class Main {
             String command = (String) rootJson.get("command");
             String guiVersion = (String) rootJson.get("guiVersion");
             String status = "None";
+            Color embedColor;
 
             File logDirectory = new File("logs/");
             if (!logDirectory.exists())
@@ -116,10 +118,14 @@ public class Main {
             if (matcher.find()) {
                 //If what=message is not null
                 if (matcher.group(1) != null) {
+                    //Probably an error
                     status = matcher.group(1);
+                    embedColor = new Color(233, 56, 56);
                 } else {
                     //Otherwise status is just the match then
+                    //Probably success
                     status = matcher.group(0);
+                    embedColor = new Color(98, 201, 73);
                 }
             }
 
@@ -142,13 +148,10 @@ public class Main {
             //Build a nice looking embed to appear Cryptic's old eyes
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setAuthor("User: " + discord);
-            embedBuilder.setDescription(
-                    "Message: `" + status + "`\n" +
-                    "Command:\n" +
-                    "```\n" +
-                    command + "\n" +
-                    "```\n");
+            embedBuilder.addField("Message", "```\n" + status + "\n```", false);
+            embedBuilder.addField("Command", "```\n" + command + "\n```", false);
             embedBuilder.setFooter("FR-GUI version: " + guiVersion);
+            embedBuilder.setColor(new Color(1, 1, 1));
 
             jda.getTextChannelById("818879231772983357").sendMessage(embedBuilder.build())
                     .addFile(fileToSend).complete();
