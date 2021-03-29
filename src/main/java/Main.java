@@ -103,7 +103,7 @@ public class Main {
             String command = (String) rootJson.get("command");
             String guiVersion = (String) rootJson.get("guiVersion");
             String status = "None";
-            Color embedColor;
+            Color embedColor = null;
 
             File logDirectory = new File("logs/");
             if (!logDirectory.exists())
@@ -151,7 +151,8 @@ public class Main {
             embedBuilder.addField("Message", "```\n" + status + "\n```", false);
             embedBuilder.addField("Command", "```\n" + command + "\n```", false);
             embedBuilder.setFooter("FR-GUI version: " + guiVersion);
-            embedBuilder.setColor(new Color(1, 1, 1));
+            if (embedColor != null)
+                embedBuilder.setColor(embedColor);
 
             jda.getTextChannelById("818879231772983357").sendMessage(embedBuilder.build())
                     .addFile(fileToSend).complete();
