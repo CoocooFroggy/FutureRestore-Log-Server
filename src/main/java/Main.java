@@ -11,6 +11,7 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,14 +65,22 @@ public class Main {
 
                 respond(exchange, 200, "ty for log <3");
             } catch (IOException e) {
+                respond(exchange, 500, "Something went wrong, sorry :/");
                 e.printStackTrace();
             }
+
+            exchange.close();
         }
 
         boolean authorize(HttpExchange exchange, Headers headers) throws IOException {
             // Make sure it's coming from FR ;)
             String correctAuthString = "CoocooFroggy rocks";
-            String providedAuthString = headers.get("authorization").get(0);
+            List<String> authHeaders = headers.get("authorization");
+            if (authHeaders == null) {
+                respond(exchange, 403, "Provide an auth header :/");
+                return false;
+            }
+            String providedAuthString = authHeaders.get(0);
             if (!providedAuthString.equals(correctAuthString)) {
                 respond(exchange, 403, "Wrong auth header :/");
                 return false;
@@ -161,11 +170,15 @@ public class Main {
             fileToSend.delete();
         }
 
-        void respond(HttpExchange exchange, int responseCode, String response) throws IOException {
-            exchange.sendResponseHeaders(responseCode, response.length());
-            OutputStream os = exchange.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
+        void respond(HttpExchange exchange, int responseCode, String response) {
+            try {
+                exchange.sendResponseHeaders(responseCode, response.length());
+                OutputStream os = exchange.getResponseBody();
+                os.write(response.getBytes());
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
