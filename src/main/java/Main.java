@@ -163,7 +163,11 @@ public class Main {
             if (embedColor != null)
                 embedBuilder.setColor(embedColor);
 
+            // #logs in personal server
             jda.getTextChannelById("818879231772983357").sendMessage(embedBuilder.build())
+                    .addFile(fileToSend).complete();
+            // #logs in Cryptic FDR Bureau server
+            jda.getTextChannelById("842197751316086804").sendMessage(embedBuilder.build())
                     .addFile(fileToSend).complete();
 
             //Delete the file
