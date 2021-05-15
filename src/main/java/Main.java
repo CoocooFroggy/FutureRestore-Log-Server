@@ -124,7 +124,8 @@ public class Main {
 
             // Parse error/success message
             Matcher matcher = pattern.matcher(fullLog);
-            if (matcher.find()) {
+            // "while" will get the last match. "if" will get the first match.
+            while (matcher.find()) {
                 //If what=message is not null
                 if (matcher.group(1) != null) {
                     //Probably an error
