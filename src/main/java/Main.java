@@ -99,6 +99,7 @@ public class Main {
                 bodyBuilder.append(character);
             }
 
+            reader.close();
             Gson gson = new Gson();
             return gson.fromJson(bodyBuilder.toString(), Map.class);
         }
