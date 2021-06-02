@@ -6,11 +6,15 @@ import com.sun.net.httpserver.HttpServer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -104,8 +108,6 @@ public class Main {
             return gson.fromJson(bodyBuilder.toString(), Map.class);
         }
 
-        Pattern pattern = Pattern.compile("what=(.*)|Done: restoring succeeded!");
-
         void sendLog(Map<String, Object> rootJson) throws IOException {
             String discord = (String) rootJson.get("discord");
             String logName = (String) rootJson.get("logName");
@@ -124,20 +126,41 @@ public class Main {
             String logPath = "logs/" + logName;
 
             // Parse error/success message
-            Matcher matcher = pattern.matcher(fullLog);
+            Pattern messagePattern = Pattern.compile("what=(.*)|Done: restoring succeeded!");
+            Matcher messageMatcher = messagePattern.matcher(fullLog);
             // "while" will get the last match. "if" will get the first match.
-            while (matcher.find()) {
+            while (messageMatcher.find()) {
                 //If what=message is not null
-                if (matcher.group(1) != null) {
+                if (messageMatcher.group(1) != null) {
                     //Probably an error
-                    status = matcher.group(1);
+                    status = messageMatcher.group(1);
                     embedColor = new Color(233, 56, 56);
                 } else {
                     //Otherwise status is just the match then
                     //Probably success
-                    status = matcher.group(0);
+                    status = messageMatcher.group(0);
                     embedColor = new Color(98, 201, 73);
                 }
+            }
+
+            String hashedSerial = null;
+            Pattern serialPattern = Pattern.compile("INFO: device serial number is (.*)");
+            Matcher serialMatcher = serialPattern.matcher(fullLog);
+
+            //Only get first match
+            if (serialMatcher.find()) {
+                String serial = serialMatcher.group(1);
+                byte[] hash;
+                try {
+                    MessageDigest digest = digest = MessageDigest.getInstance("SHA-256");
+                    hash = digest.digest(serial.getBytes(StandardCharsets.UTF_8));
+                } catch (NoSuchAlgorithmException e) {
+                    // If hash fails somehow just leave it plain
+                    e.printStackTrace();
+                    hash = serial.getBytes(StandardCharsets.UTF_8);
+                }
+                // Make it hex
+                hashedSerial = Hex.encodeHexString(hash);
             }
 
             FileWriter writer = new FileWriter(logPath);
@@ -156,11 +179,14 @@ public class Main {
                 guiVersion = "None (or GUI version too old)";
             }
 
-            //Build a nice looking embed to appear Cryptic's old eyes
+            // Build a nice looking embed to appeal to Cryptic's old eyes
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setAuthor("User: " + discord);
             embedBuilder.addField("Message", "```\n" + status + "\n```", false);
             embedBuilder.addField("Command", "```\n" + command + "\n```", false);
+            if (hashedSerial != null) {
+                embedBuilder.addField("Hashed Serial", "`" + hashedSerial + "`", true);
+            }
             embedBuilder.setFooter("FR-GUI version: " + guiVersion);
             if (embedColor != null)
                 embedBuilder.setColor(embedColor);
