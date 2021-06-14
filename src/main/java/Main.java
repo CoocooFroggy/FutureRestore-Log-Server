@@ -17,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +48,7 @@ public class Main {
         //Start HTTP Server
         HttpServer server = HttpServer.create(new InetSocketAddress(6969), 0);
         server.createContext("/upload", new LogHandler());
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(Executors.newFixedThreadPool(10)); // creates a default executor
         server.start();
 
     }
