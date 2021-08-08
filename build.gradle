@@ -17,10 +17,16 @@ version '1.0'
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+      name 'm2-dv8tion'
+      url 'https://m2.dv8tion.net/releases'
+    }
 }
 
 dependencies {
-    compile("net.dv8tion:JDA:4.2.0_168")
+    implementation("net.dv8tion:4.3.0:277") {
+        exclude module: 'opus-java'
+    }
     compile("ch.qos.logback:logback-classic:1.2.3")
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
