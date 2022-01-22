@@ -1,7 +1,10 @@
 plugins {
     id 'java'
-    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
+
+group 'com.coocoofroggy'
+version '1.0'
 
 jar {
     manifest {
@@ -11,21 +14,20 @@ jar {
     }
 }
 
-group 'com.coocoofroggy'
-version '1.0'
-
 repositories {
     mavenCentral()
-    jcenter()
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
 }
 
 dependencies {
-    compile("net.dv8tion:JDA:4.2.0_168")
-    compile("ch.qos.logback:logback-classic:1.2.3")
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation("net.dv8tion:JDA:4.4.0_350")
+    implementation('ch.qos.logback:logback-classic:1.2.10')
+    implementation 'com.google.code.gson:gson:2.8.9'
     implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
 }
 
 test {
-    useJUnitPlatform()
 }

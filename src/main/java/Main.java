@@ -25,7 +25,7 @@ public class Main {
     public static JDA jda;
 
     public static void main(String[] args) {
-        String token = System.getenv("DISCORD_TOKEN");
+        String token = System.getenv("FRLOG_DISCORD_TOKEN");
 
         //Start bot
         try {
@@ -48,7 +48,7 @@ public class Main {
         //Start HTTP Server
         HttpServer server = HttpServer.create(new InetSocketAddress(6969), 0);
         server.createContext("/upload", new LogHandler());
-        server.setExecutor(Executors.newFixedThreadPool(10)); // creates a default executor
+        server.setExecutor(Executors.newFixedThreadPool(5)); // creates a default executor
         server.start();
 
     }
