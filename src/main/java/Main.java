@@ -90,7 +90,7 @@ public class Main {
         boolean authorize(HttpExchange exchange, Headers headers) throws IOException {
             // Make sure it's coming from FR ;)
             String correctAuthString = "CoocooFroggy rocks";
-            List<String> authHeaders = headers.get("authorization");
+            List<String> authHeaders = headers.get("Authorization");
             if (authHeaders == null) {
                 respond(exchange, 403, "Provide an auth header :/");
                 return false;
@@ -100,7 +100,7 @@ public class Main {
                 respond(exchange, 403, "Wrong auth header :/");
                 return false;
             }
-            //Otherwise it's correct
+            // Otherwise, it's correct
             return true;
         }
 
@@ -141,14 +141,14 @@ public class Main {
             Matcher messageMatcher = messagePattern.matcher(fullLog);
             // "while" will get the last match. "if" will get the first match.
             while (messageMatcher.find()) {
-                //If what=message is not null
+                // If what=message is not null
                 if (messageMatcher.group(1) != null) {
-                    //Probably an error
+                    // Probably an error
                     status = messageMatcher.group(1);
                     embedColor = new Color(233, 56, 56);
                 } else {
-                    //Otherwise status is just the match then
-                    //Probably success
+                    // Otherwise, status is just the match then
+                    // Probably success
                     status = messageMatcher.group(0);
                     embedColor = new Color(98, 201, 73);
                 }
@@ -158,7 +158,7 @@ public class Main {
             Pattern serialPattern = Pattern.compile("INFO: device serial number is (.*)");
             Matcher serialMatcher = serialPattern.matcher(fullLog);
 
-            //Only get first match
+            // Only get first match
             if (serialMatcher.find()) {
                 String serial = serialMatcher.group(1);
                 byte[] hash;
@@ -209,7 +209,7 @@ public class Main {
             jda.getTextChannelById("842197751316086804").sendMessage(embedBuilder.build())
                     .addFile(fileToSend).complete();
 
-            //Delete the file
+            // Delete the file
             fileToSend.delete();
         }
 
