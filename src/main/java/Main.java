@@ -25,9 +25,18 @@ public class Main {
     public static JDA jda;
 
     public static void main(String[] args) {
+        System.out.println("Starting up...");
+
+        // Java 17 issue when the VM has 1 core. Fixed in Java 18.
+        final int cores = Runtime.getRuntime().availableProcessors();
+        if (cores <= 1) {
+            System.out.println("Available Cores \"" + cores + "\", setting Parallelism Flag");
+            System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
+        }
+
         String token = System.getenv("FRLOG_DISCORD_TOKEN");
 
-        //Start bot
+        // Start bot
         try {
             jda = JDABuilder.createDefault(token).build();
         } catch (LoginException e) {
@@ -36,18 +45,19 @@ public class Main {
             return;
         }
 
-        //Start HTTP server
+        // Start HTTP server
         try {
             startHttpServer();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Started!");
     }
 
     static void startHttpServer() throws IOException {
         //Start HTTP Server
         HttpServer server = HttpServer.create(new InetSocketAddress(6969), 0);
-        server.createContext("/upload", new LogHandler());
+        server.createContext("/frlogs/upload", new LogHandler());
         server.setExecutor(Executors.newFixedThreadPool(5)); // creates a default executor
         server.start();
 
