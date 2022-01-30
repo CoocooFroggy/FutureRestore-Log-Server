@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
@@ -105,7 +106,7 @@ public class Main {
         }
 
         Map<String, Object> parseData(HttpExchange exchange) throws IOException {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+            /*BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
 
             StringBuilder bodyBuilder = new StringBuilder(); // bodyBuilder [strong.jpg]
             int charInteger;
@@ -114,9 +115,13 @@ public class Main {
                 bodyBuilder.append(character);
             }
 
-            reader.close();
+            reader.close();*/
+
             Gson gson = new Gson();
-            return gson.fromJson(bodyBuilder.toString(), Map.class);
+            return gson.fromJson(
+                    IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8),
+                    Map.class
+            );
         }
 
         void sendLog(Map<String, Object> rootJson) throws IOException {
@@ -163,7 +168,7 @@ public class Main {
                 String serial = serialMatcher.group(1);
                 byte[] hash;
                 try {
-                    MessageDigest digest = digest = MessageDigest.getInstance("SHA-256");
+                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
                     hash = digest.digest(serial.getBytes(StandardCharsets.UTF_8));
                 } catch (NoSuchAlgorithmException e) {
                     // If hash fails somehow just leave it plain
@@ -203,10 +208,10 @@ public class Main {
                 embedBuilder.setColor(embedColor);
 
             // #logs in personal server
-            jda.getTextChannelById("818879231772983357").sendMessage(embedBuilder.build())
+            jda.getTextChannelById("818879231772983357").sendMessageEmbeds(embedBuilder.build())
                     .addFile(fileToSend).complete();
             // #logs in Cryptic FDR Bureau server
-            jda.getTextChannelById("842197751316086804").sendMessage(embedBuilder.build())
+            jda.getTextChannelById("842197751316086804").sendMessageEmbeds(embedBuilder.build())
                     .addFile(fileToSend).complete();
 
             // Delete the file
